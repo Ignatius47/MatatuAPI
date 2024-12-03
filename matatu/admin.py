@@ -1,12 +1,30 @@
 from django.contrib import admin
-from .models import Matatu
+from .models import Stop, Route, RouteStop, FareRule, Booking
 
-class MatatuAdmin(admin.ModelAdmin):
-    list_display = ('driver_name', 'plate_number', 'route', 'capacity', 'status')
-    list_filter = ('status', 'route')
-    search_fields = ('driver_name', 'plate_number', 'route__name')
+@admin.register(Stop)
+class StopAdmin(admin.ModelAdmin):
+    list_display = ('name', 'latitude', 'longitude', 'is_major_stop')
+    search_fields = ('name',)
+    list_filter = ('is_major_stop',)
 
-admin.site.register(Matatu, MatatuAdmin)
+@admin.register(Route)
+class RouteAdmin(admin.ModelAdmin):
+    list_display = ('route_number', 'name', 'base_fare')
+    search_fields = ('route_number', 'name')
 
+@admin.register(RouteStop)
+class RouteStopAdmin(admin.ModelAdmin):
+    list_display = ('route', 'stop', 'stop_order', 'distance_from_start')
+    list_filter = ('route',)
+    ordering = ('route', 'stop_order')
 
-# Register your models here.
+@admin.register(FareRule)
+class FareRuleAdmin(admin.ModelAdmin):
+    list_display = ('route', 'min_distance', 'max_distance', 'fare')
+    list_filter = ('route',)
+
+@admin.register(Booking)
+class BookingAdmin(admin.ModelAdmin):
+    list_display = ('user', 'route', 'stop', 'status', 'created_at')
+    list_filter = ('route', 'status')
+    search_fields = ('user__username', 'route__name', 'stop__name')

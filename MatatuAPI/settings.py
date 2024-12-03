@@ -11,6 +11,16 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,8 +29,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2rz+2ovd(r)r8zco^mb4s_$*!t45*y)omqtwk(*stl^7e02j5%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,12 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'drf_yasg',
-    'route',
-    'stop',
-    'fare',
-    'matatu',
-    'bookings',
-    
+    'routes',
+    'matatu',    
 ]
 
 MIDDLEWARE = [
@@ -112,11 +116,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'Africa/Nairobi'
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -129,70 +130,70 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', '')
 
-import os
 from logging.handlers import RotatingFileHandler
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/matatu_app.log'),
-            'formatter': 'verbose',
-        },
-        'critical_file': {
-            'level': 'CRITICAL',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/critical.log'),
-            'maxBytes': 1024 * 1024 * 50,  # 50MB
-            'backupCount': 1,  # Keep one backup file
-            'formatter': 'verbose',
-        },
-        'error_file': {
-            'level': 'ERROR',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/error.log'),
-            'maxBytes': 1024 * 1024 * 50,  # 50MB
-            'backupCount': 1,  # Keep one backup file
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'django.request': {
-            'handlers': ['file', 'critical_file', 'error_file'],  # Ensure all handlers are included
-            'level': 'ERROR',
-            'propagate': False,
-        },
-        'fare': {  # Your app-specific logger (replace 'myapp' with the correct name)
-            'handlers': ['error_file'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {module} {message}',
+#             'style': '{',
+#         },
+#         'simple': {
+#             'format': '{levelname} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple',
+#         },
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs/matatu_app.log'),
+#             'formatter': 'verbose',
+#         },
+#         'critical_file': {
+#             'level': 'CRITICAL',
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs/critical.log'),
+#             'maxBytes': 1024 * 1024 * 50,  # 50MB
+#             'backupCount': 1,  # Keep one backup file
+#             'formatter': 'verbose',
+#         },
+#         'error_file': {
+#             'level': 'ERROR',
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs/error.log'),
+#             'maxBytes': 1024 * 1024 * 50,  # 50MB
+#             'backupCount': 1,  # Keep one backup file
+#             'formatter': 'verbose',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console', 'file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#         'django.request': {
+#             'handlers': ['file', 'critical_file', 'error_file'],  # Ensure all handlers are included
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#         'fare': {  # Your app-specific logger (replace 'myapp' with the correct name)
+#             'handlers': ['error_file'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#     },
+# }
 
 
 ###DO NOT TOUCH YET
@@ -210,4 +211,3 @@ EMAIL_HOST_PASSWORD = 'your_email_password'
 
 
 """
-

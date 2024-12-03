@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import MatatuViewSet
 
 router = DefaultRouter()
-router.register(r'matatuusss', MatatuViewSet)
+router.register(r'matatu', MatatuViewSet)
 
 
 urlpatterns = [

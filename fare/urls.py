@@ -6,5 +6,5 @@ router = DefaultRouter()
 router.register(r'fares', FareViewSet)
 
 urlpatterns = [
-    path('fare/', include(router.urls)),
+    path('', include(router.urls)),
 ]

@@ -6,5 +6,5 @@ router = DefaultRouter()
 router.register(r'stop', StopViewSet)
 
 urlpatterns = [
-    path('stop/', include(router.urls)),
+    path('', include(router.urls)),
 ]

@@ -5,10 +5,16 @@ from django.conf import settings
 import googlemaps
 from .models import Stop, Route, FareRule
 from .serializers import StopSerializer, RouteSerializer, FareRuleSerializer
+from rest_framework import filters
+
 
 class StopViewSet(viewsets.ModelViewSet):
     queryset = Stop.objects.all()
     serializer_class = StopSerializer
+
+    def get_queryset(self):
+        route_id = self.kwargs.get('route_id')
+        return self.queryset.filter(route_id=route_id)
 
     @action(detail=False, methods=['GET'])
     def nearby(self, request):
@@ -16,39 +22,64 @@ class StopViewSet(viewsets.ModelViewSet):
         lng = request.query_params.get('longitude')
         radius = request.query_params.get('radius', 1000)  # Default 1km radius
 
-        if not all([lat, lng]):
+        # Ensure latitude and longitude are provided and are valid floats
+        if not lat or not lng:
             return Response(
                 {"error": "Latitude and longitude are required"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Use Google Maps API to find nearby stops
-        gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
-        location = (float(lat), float(lng))
-        
-        # Query stops within radius
-        nearby_stops = Stop.objects.raw(
-            """
-            SELECT id, name, latitude, longitude,
-                   ( 6371 * acos( cos( radians(%s) ) *
-                     cos( radians( latitude ) ) *
-                     cos( radians( longitude ) - radians(%s) ) +
-                     sin( radians(%s) ) *
-                     sin( radians( latitude ) )
-                   ) ) AS distance
-            FROM routes_stop
-            HAVING distance < %s
-            ORDER BY distance
-            """,
-            [float(lat), float(lng), float(lat), float(radius) / 1000]
-        )
+        try:
+            lat = float(lat)
+            lng = float(lng)
+        except ValueError:
+            return Response(
+                {"error": "Latitude and longitude must be valid numbers"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
+        # Ensure radius is a valid number
+        try:
+            radius = float(radius)
+        except ValueError:
+            return Response(
+                {"error": "Radius must be a valid number"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Use Google Maps API to find nearby places
+        try:
+            gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+            location = (lat, lng)
+            
+            # Use Google Maps places_nearby method
+            places_result = gmaps.places_nearby(location, radius=int(radius))
+            
+            # Extract nearby places data (e.g., names, locations)
+            nearby_stops = []
+            for place in places_result.get('results', []):
+                nearby_stops.append({
+                    'name': place.get('name'),
+                    'latitude': place.get('geometry', {}).get('location', {}).get('lat'),
+                    'longitude': place.get('geometry', {}).get('location', {}).get('lng')
+                })
+
+        except googlemaps.exceptions.ApiError as e:
+            return Response({"error": f"Google Maps API error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({"error": f"Unexpected error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Serialize the nearby stops data
         serializer = self.get_serializer(nearby_stops, many=True)
         return Response(serializer.data)
+
 
 class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.all()
     serializer_class = RouteSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'description', 'route_number']
+    ordering_fields = ['route_number', 'name']
 
     @action(detail=True, methods=['GET'])
     def estimate_fare(self, request, pk=None):

@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --color-primary: #00f5d4;
+  --color-secondary: #7b2cbf;
+  --color-background: #0a192f;
+  --color-surface: rgba(255, 255, 255, 0.05);
+  --color-text: #e2e8f0;
+}
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-background text-text font-sans min-h-screen;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(123, 44, 191, 0.15), transparent 50%),
+      radial-gradient(circle at 0% 100%, rgba(0, 245, 212, 0.1), transparent 50%);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-orbitron;
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary-900/50 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary-700/50;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-surface backdrop-blur-md border border-white/10 rounded-lg shadow-lg;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .neon-glow {
+    @apply relative;
+    box-shadow: 0 0 15px theme('colors.primary.500/50');
+  }
+
+  .neon-text {
+    @apply text-primary-500;
+    text-shadow: 0 0 8px theme('colors.primary.500/50');
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .hover-lift:hover {
+    @apply -translate-y-1 neon-glow;
+  }
+}
+
+.mapboxgl-map {
+  @apply rounded-lg border border-white/10;
+}
+
+.mapboxgl-ctrl-top-right {
+  @apply m-4;
+}
+
+.mapboxgl-ctrl button {
+  @apply bg-surface backdrop-blur-md border border-white/10 !important;
+}
+
+.mapboxgl-ctrl button:hover {
+  @apply bg-white/10 !important;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 8s linear infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

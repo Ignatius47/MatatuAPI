@@ -130,9 +130,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-import os
-from logging.handlers import RotatingFileHandler
-
+"""
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -196,8 +194,6 @@ LOGGING = {
 
 
 ###DO NOT TOUCH YET
-"""
-
 
 ADMINS = [('Your Name', 'your_email@example.com')]
 
@@ -207,7 +203,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'your_email@example.com'
 EMAIL_HOST_PASSWORD = 'your_email_password'
-
 
 """
 

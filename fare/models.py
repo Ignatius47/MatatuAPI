@@ -3,7 +3,7 @@ from  route.models import Route
 
 class Fare(models.Model):
     route = models.ForeignKey(Route, related_name='fares', on_delete=models.CASCADE)
-    min_distance = models.FloatField()
+    min_distance = models.FloatField(default=0.0)
     max_distance = models.FloatField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     
@@ -12,6 +12,10 @@ class Fare(models.Model):
         ('Cash', 'Cash'),
         ('Courage', 'Courage'),
         ('Kidney', 'Kidney'),
+        ('Fists', 'Fists'),
+        ('Sambaza', 'Sambaza'),
+        ('Boxing', 'Boxing'),
+        ('Wreso', 'Wreso'),
     ]
     
     fare_type = models.CharField(max_length=10, choices=FARE_CHOICES)

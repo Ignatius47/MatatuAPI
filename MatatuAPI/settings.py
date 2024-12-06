@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'stop',
     'fare',
     'matatu',
+    'matatu_stages',
     'bookings',
     
 ]
